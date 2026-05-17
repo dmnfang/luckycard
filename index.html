@@ -94,10 +94,10 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 .slide.active { display:flex; }
 
 /* Vocab */
-.vocab-card { background:var(--surface-card); border-radius:var(--r-lg); border:2px solid var(--stroke-default); width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; overflow:hidden; }
-.vocab-img-wrap { flex:1; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; overflow:hidden; }
+.vocab-card { background:var(--surface-card); border-radius:var(--r-lg); border:2px solid var(--stroke-default); width:100%; height:100%; display:flex; flex-direction:column; align-items:center; padding:24px; gap:16px; overflow:hidden; }
+.vocab-img-wrap { flex:4; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; overflow:hidden; }
 .vocab-img-wrap img { max-width:100%; max-height:100%; object-fit:contain; }
-.vocab-word { font-family:var(--font-display); font-size:clamp(48px,10vw,80px); font-weight:600; color:var(--text-primary); text-align:center; flex-shrink:0; line-height:1.1; padding-top:16px; }
+.vocab-word { flex:1; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:clamp(40px,8vw,72px); font-weight:700; color:#FFFFFF; text-align:center; line-height:1.1; -webkit-text-stroke:3px var(--text-primary); paint-order:stroke fill; }
 
 /* ══ CONVERSATION MODEL ══ */
 .convo-card {
@@ -192,11 +192,11 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 .ref-alt { font-size:clamp(13px,2vw,18px); color:var(--text-muted); }
 .vocab-grid { flex:1; display:grid; grid-template-columns:repeat(4, 1fr); grid-template-rows:repeat(2, 1fr); gap:10px; overflow:hidden; }
 .vocab-grid.cols-3 { grid-template-columns:repeat(3, 1fr); }
-.vocab-mini { background:var(--surface-inset); border-radius:var(--r-md); padding:10px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:0; overflow:hidden; }
+.vocab-mini { background:var(--surface-inset); border-radius:var(--r-md); padding:8px; display:flex; flex-direction:column; align-items:center; gap:6px; min-height:0; overflow:hidden; }
 .vocab-mini.ghost { background:transparent; }
-.vocab-mini-img { font-size:clamp(28px,5vh,52px); line-height:1; }
-.vocab-mini-img img { width:clamp(40px,7vh,72px); height:clamp(40px,7vh,72px); object-fit:contain; }
-.vocab-mini-word { font-family:var(--font-display); font-size:clamp(14px,2.2vh,22px); font-weight:500; text-align:center; color:var(--text-primary); }
+.vocab-mini-img { flex:4; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; font-size:clamp(32px,6vh,64px); line-height:1; }
+.vocab-mini-img img { max-width:100%; max-height:100%; object-fit:contain; }
+.vocab-mini-word { flex:1; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:clamp(13px,2vh,20px); font-weight:700; text-align:center; color:#FFFFFF; -webkit-text-stroke:2px var(--text-primary); paint-order:stroke fill; }
 .lucky-controls-row { display:flex; align-items:center; gap:12px; flex-shrink:0; padding-top:4px; }
 .lucky-label { font-size:14px; font-weight:700; color:var(--text-muted); flex-shrink:0; }
 .toggle-group { display:flex; gap:6px; }
