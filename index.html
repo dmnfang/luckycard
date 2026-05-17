@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FEFAF0">
+<title>Lucky Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --surface-base:   #FEFAF0;
+  --surface-panel:  #F0E8D5;
+  --surface-card:   #FFFFFF;
+  --surface-inset:  #F5EFE3;
+  --text-primary:   #2D2A1E;
+  --text-secondary: #4A4636;
+  --text-muted:     #8C8472;
+  --text-disabled:  #CEC0AC;
+  --text-inverse:   #FFFFFF;
+  --stroke-default: #DDD0BA;
+  --stroke-medium:  #C4B49A;
+  --stroke-selected:#6DBF93;
+  --green:          #4AA875;
+  --font-display:   'Fredoka', sans-serif;
+  --font-ui:        'Nunito', sans-serif;
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   24px;
+  --r-pill: 9999px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+
+html,body {
+  width:100%; height:100%; overflow:hidden;
+  background:var(--surface-base);
+  font-family:var(--font-ui);
+  color:var(--text-primary);
+  -webkit-font-smoothing:antialiased;
+  user-select:none; -webkit-user-select:none;
+}
+
+button { font-family:var(--font-ui); cursor:pointer; border:none; background:none; color:inherit; padding:0; }
+button:active { opacity:0.75; }
+button:disabled { cursor:not-allowed; opacity:0.4; }
+img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
+.hidden { display:none !important; }
+
+/* ── SCREENS ── */
+.screen {
+  position:absolute; inset:0; display:none;
+  flex-direction:column; background:var(--surface-base); overflow:hidden;
+}
+.screen.active { display:flex; }
+
+/* ── NAV BTN ── */
+.nav-btn {
+  width:40px; height:40px; border-radius:var(--r-md);
+  background:var(--surface-panel); color:var(--text-secondary);
+  display:flex; align-items:center; justify-content:center;
+  border:none; cursor:pointer; flex-shrink:0; font-size:18px;
+}
+.nav-btn:active { opacity:0.7; transform:scale(0.94); }
+
+/* ══════════════════════════════
+   HOME
+══════════════════════════════ */
+#screen-home { padding:24px; gap:24px; }
+
+.home-topbar {
+  display:flex; align-items:center; height:40px; flex-shrink:0;
+}
+.home-app-title {
+  font-family:var(--font-display); font-size:28px; font-weight:600;
+  color:var(--text-primary); line-height:1;
+}
+
+.home-body { flex:1; display:flex; gap:24px; min-height:0; }
+
+.deck-panel {
+  flex:1; min-width:0;
+  background:var(--surface-panel);
+  border-radius:var(--r-lg);
+  border:2px solid var(--stroke-default);
+  display:flex; flex-direction:column;
+  padding:24px; gap:16px; overflow:hidden;
+}
+.panel-title {
+  font-family:var(--font-display); font-size:24px; font-weight:500;
+  color:var(--text-primary); flex-shrink:0;
+}
+.deck-list { display:flex; flex-direction:column; gap:12px; overflow-y:auto; flex:1; }
+.deck-list::-webkit-scrollbar { width:4px; }
+.deck-list::-webkit-scrollbar-thumb { background:var(--stroke-default); border-radius:2px; }
+
+.deck-card {
+  background:var(--surface-card);
+  border-radius:var(--r-lg);
+  border:2px solid transparent;
+  padding:16px 20px; cursor:pointer;
+  display:flex; align-items:center; gap:16px;
+  transition:border-color 0.15s;
+}
+.deck-card:hover  { border-color:var(--stroke-default); }
+.deck-card:active { opacity:0.85; }
+
+.deck-card-icon {
+  width:52px; height:52px; border-radius:var(--r-md);
+  background:var(--surface-inset);
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; flex-shrink:0;
+}
+.deck-card-info { flex:1; min-width:0; }
+.deck-card-name {
+  font-family:var(--font-display); font-size:22px; font-weight:500;
+  color:var(--text-primary); line-height:1.2;
+}
+.deck-card-grade {
+  font-size:14px; font-weight:700; color:var(--text-muted); margin-top:2px;
+}
+.deck-card-chip {
+  display:inline-flex; align-items:center;
+  background:var(--surface-inset); border-radius:var(--r-pill);
+  padding:0 12px; height:26px;
+  font-size:13px; font-weight:700; color:var(--text-muted); margin-top:6px;
+}
+.deck-card-arrow { font-size:18px; color:var(--stroke-medium); flex-shrink:0; }
+
+/* ══════════════════════════════
+   LANGUAGE POINT
+══════════════════════════════ */
+#screen-lp { padding:24px; gap:24px; }
+
+.topbar {
+  display:flex; align-items:center; gap:16px;
+  height:40px; flex-shrink:0;
+}
+.topbar-title {
+  font-family:var(--font-display); font-size:26px; font-weight:500;
+  color:var(--text-primary); line-height:1;
+}
+.topbar-sub {
+  font-size:14px; font-weight:700; color:var(--text-muted); margin-top:2px;
+}
+
+.lp-body { flex:1; display:flex; gap:24px; min-height:0; }
+
+.lp-card {
+  flex:1;
+  background:var(--surface-card);
+  border-radius:var(--r-lg);
+  border:2px solid var(--stroke-default);
+  padding:28px; cursor:pointer;
+  display:flex; flex-direction:column; gap:16px;
+  transition:border-color 0.15s;
+}
+.lp-card:hover  { border-color:var(--stroke-medium); }
+.lp-card:active { opacity:0.85; }
+
+.lp-level {
+  font-size:13px; font-weight:800; letter-spacing:0.08em;
+  text-transform:uppercase; color:var(--text-muted);
+}
+.lp-preview {
+  font-family:var(--font-display); font-size:32px; font-weight:500;
+  color:var(--text-primary); line-height:1.45; flex:1;
+}
+.lp-tag {
+  display:inline-flex; align-items:center;
+  background:var(--surface-inset); border-radius:var(--r-pill);
+  padding:0 14px; height:32px;
+  font-size:13px; font-weight:700; color:var(--text-secondary);
+  width:fit-content;
+}
+
+/* ══════════════════════════════
+   SLIDES
+══════════════════════════════ */
+#screen-slides { padding:24px; gap:16px; }
+
+.slides-topbar {
+  display:flex; align-items:center; gap:12px;
+  height:40px; flex-shrink:0;
+}
+.slides-counter {
+  flex:1; text-align:center;
+  font-size:14px; font-weight:700; color:var(--text-muted);
+}
+.slide-nav-btn {
+  height:40px; padding:0 20px; border-radius:var(--r-md);
+  background:var(--surface-panel); color:var(--text-primary);
+  font-family:var(--font-ui); font-size:15px; font-weight:800;
+  border:none; cursor:pointer; flex-shrink:0;
+}
+.slide-nav-btn:disabled { opacity:0.3; cursor:default; }
+.slide-nav-btn:not(:disabled):active { opacity:0.7; transform:scale(0.96); }
+
+.slide-stage { flex:1; min-height:0; position:relative; }
+
+.slide {
+  position:absolute; inset:0; display:none;
+  flex-direction:column; align-items:center; justify-content:center;
+}
+.slide.active { display:flex; }
+
+/* Vocab slide */
+.vocab-card {
+  background:var(--surface-card);
+  border-radius:var(--r-lg);
+  border:2px solid var(--stroke-default);
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:24px; gap:0; overflow:hidden;
+}
+.vocab-img-wrap {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  width:100%; min-height:0; overflow:hidden;
+}
+.vocab-img-wrap img { max-width:100%; max-height:100%; object-fit:contain; }
+.vocab-img-wrap .vocab-emoji { font-size:clamp(80px,20vh,160px); line-height:1; }
+.vocab-word {
+  font-family:var(--font-display); font-size:clamp(48px,10vw,80px); font-weight:600;
+  color:var(--text-primary); text-align:center; flex-shrink:0; line-height:1.1;
+  padding-top:16px;
+}
+
+/* Model slide */
+.model-card {
+  background:var(--surface-card);
+  border-radius:var(--r-lg);
+  border:2px solid var(--stroke-default);
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:40px; gap:16px; overflow-y:auto;
+}
+.model-card::-webkit-scrollbar { width:4px; }
+.model-card::-webkit-scrollbar-thumb { background:var(--stroke-default); border-radius:2px; }
+.model-line {
+  width:100%; max-width:720px;
+  border-radius:var(--r-lg); padding:20px 28px;
+}
+.model-line-speaker {
+  font-family:var(--font-ui);
+  font-size:12px; font-weight:800; letter-spacing:0.07em;
+  text-transform:uppercase; color:var(--text-muted); margin-bottom:6px;
+}
+.model-line-text {
+  font-family:var(--font-display); font-size:clamp(28px,5vw,44px);
+  font-weight:500; line-height:1.3; color:var(--text-primary);
+}
+.model-blank {
+  display:inline-block; min-width:80px;
+  border-bottom:3px solid var(--stroke-medium);
+  opacity:0.5; margin:0 6px; vertical-align:bottom;
+}
+.model-alt {
+  font-family:var(--font-display); font-size:clamp(18px,3vw,26px);
+  color:var(--text-muted); margin-top:4px; display:block;
+}
+
+/* Reference slide */
+.ref-card {
+  background:var(--surface-card);
+  border-radius:var(--r-lg);
+  border:2px solid var(--stroke-default);
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  padding:20px; gap:16px; overflow:hidden;
+}
+.ref-model-bar {
+  background:var(--surface-inset);
+  border-radius:var(--r-md);
+  padding:14px 20px; flex-shrink:0;
+  display:flex; flex-wrap:wrap; gap:4px 20px; align-items:baseline;
+}
+.ref-model-line {
+  font-family:var(--font-display); font-size:clamp(20px,3.5vw,28px);
+  font-weight:500; color:var(--text-primary); line-height:1.4;
+}
+.ref-blank {
+  display:inline-block; min-width:56px;
+  border-bottom:3px solid var(--stroke-medium);
+  opacity:0.45; margin:0 4px; vertical-align:bottom;
+}
+.ref-alt { font-size:clamp(14px,2.5vw,20px); color:var(--text-muted); }
+
+.vocab-grid {
+  flex:1; overflow-y:auto;
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));
+  gap:10px; align-content:start;
+}
+.vocab-grid::-webkit-scrollbar { width:4px; }
+.vocab-grid::-webkit-scrollbar-thumb { background:var(--stroke-default); border-radius:2px; }
+
+.vocab-mini {
+  background:var(--surface-inset);
+  border-radius:var(--r-md);
+  padding:10px 8px;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.vocab-mini-img { font-size:36px; line-height:1; }
+.vocab-mini-img img { width:56px; height:56px; object-fit:contain; }
+.vocab-mini-word {
+  font-family:var(--font-display); font-size:16px;
+  font-weight:500; text-align:center; color:var(--text-primary);
+}
+
+.lucky-controls-row {
+  display:flex; align-items:center; gap:12px;
+  flex-shrink:0; padding-top:4px;
+}
+.lucky-label {
+  font-size:14px; font-weight:700; color:var(--text-muted); flex-shrink:0;
+}
+.toggle-group { display:flex; gap:6px; }
+.toggle-pill {
+  height:40px; padding:0 18px; border-radius:var(--r-pill);
+  border:none; background:var(--surface-inset);
+  color:var(--text-muted); font-family:var(--font-ui);
+  font-size:16px; font-weight:800;
+  cursor:pointer; transition:background 0.15s, color 0.15s;
+}
+.toggle-pill.active { background:var(--green); color:#fff; }
+.toggle-pill:active { opacity:0.75; }
+
+.lucky-btn {
+  height:40px; padding:0 24px; border-radius:var(--r-lg);
+  background:var(--green); color:var(--text-inverse);
+  font-family:var(--font-ui); font-size:15px; font-weight:800;
+  border:none; cursor:pointer; margin-left:auto;
+  transition:opacity 0.15s, transform 0.1s;
+}
+.lucky-btn:active { transform:scale(0.97); opacity:0.85; }
+
+/* ══════════════════════════════
+   LUCKY SCREEN
+══════════════════════════════ */
+#screen-lucky { padding:40px; gap:24px; align-items:center; justify-content:center; }
+
+.lucky-screen-title {
+  font-family:var(--font-display); font-size:clamp(36px,6vw,56px); font-weight:600;
+  color:var(--text-primary); flex-shrink:0;
+}
+
+.lucky-cards-row {
+  display:flex; gap:20px; justify-content:center;
+  flex-wrap:wrap; align-items:stretch;
+  flex:1; max-height:60vh; width:100%;
+}
+
+.lucky-big-card {
+  background:var(--surface-card);
+  border:3px solid var(--stroke-selected);
+  border-radius:var(--r-lg);
+  padding:24px 20px;
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  flex:1; max-width:220px; min-width:140px;
+  animation:popIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.lucky-big-card:nth-child(2) { animation-delay:0.08s; }
+.lucky-big-card:nth-child(3) { animation-delay:0.16s; }
+.lucky-big-card:nth-child(4) { animation-delay:0.24s; }
+@keyframes popIn {
+  from { transform:scale(0.75); opacity:0; }
+  to   { transform:scale(1); opacity:1; }
+}
+.lucky-big-img {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  font-size:clamp(48px,10vw,80px); line-height:1; width:100%; min-height:0; overflow:hidden;
+}
+.lucky-big-img img { max-width:100%; max-height:100%; object-fit:contain; }
+.lucky-big-word {
+  font-family:var(--font-display); font-size:clamp(22px,4vw,32px);
+  font-weight:600; color:var(--text-primary); text-align:center;
+}
+
+.lucky-actions { display:flex; gap:12px; flex-shrink:0; }
+.lucky-back-btn {
+  height:48px; padding:0 28px; border-radius:var(--r-md);
+  background:var(--surface-inset); color:var(--text-secondary);
+  font-family:var(--font-ui); font-size:15px; font-weight:800; border:none; cursor:pointer;
+}
+.lucky-back-btn:active { opacity:0.75; }
+.lucky-redraw-btn {
+  height:48px; padding:0 28px; border-radius:var(--r-md);
+  background:var(--green); color:var(--text-inverse);
+  font-family:var(--font-ui); font-size:15px; font-weight:800; border:none; cursor:pointer;
+}
+.lucky-redraw-btn:active { opacity:0.75; }
+
+/* ── UTILS ── */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--stroke-default); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div class="screen active" id="screen-home">
+  <div class="home-topbar">
+    <div class="home-app-title">🃏 Lucky Card</div>
+  </div>
+  <div class="home-body">
+    <div class="deck-panel">
+      <div class="panel-title">Choose a deck</div>
+      <div class="deck-list" id="deck-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LANGUAGE POINT -->
+<div class="screen" id="screen-lp">
+  <div class="topbar">
+    <button class="nav-btn" onclick="goTo('home')">←</button>
+    <div>
+      <div class="topbar-title" id="lp-title"></div>
+      <div class="topbar-sub">Choose a language point</div>
+    </div>
+  </div>
+  <div class="lp-body" id="lp-body"></div>
+</div>
+
+<!-- SLIDES -->
+<div class="screen" id="screen-slides">
+  <div class="slides-topbar">
+    <button class="nav-btn" onclick="goTo('lp')">←</button>
+    <button class="slide-nav-btn" id="btn-prev" onclick="changeSlide(-1)">← Back</button>
+    <div class="slides-counter" id="slides-counter"></div>
+    <button class="slide-nav-btn" id="btn-next" onclick="changeSlide(1)">Next →</button>
+  </div>
+  <div class="slide-stage" id="slide-stage"></div>
+</div>
+
+<!-- LUCKY -->
+<div class="screen" id="screen-lucky">
+  <div class="lucky-screen-title">🌟 Lucky Cards!</div>
+  <div class="lucky-cards-row" id="lucky-cards-row"></div>
+  <div class="lucky-actions">
+    <button class="lucky-back-btn" onclick="goTo('slides-ref')">← Back</button>
+    <button class="lucky-redraw-btn" onclick="drawLucky()">Draw Again 🎲</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  DECK DATA
+//  To add images: replace emoji string with
+//  { type:'img', src:'images/red.png' }
+// ─────────────────────────────────────────────
+const DECKS = [
+  {
+    id:'colors', name:'Colors', grade:'Grade 3', emoji:'🎨',
+    vocab:[
+      { word:'red',    img:{ type:'emoji', val:'🔴' } },
+      { word:'yellow', img:{ type:'emoji', val:'🟡' } },
+      { word:'pink',   img:{ type:'emoji', val:'🩷' } },
+      { word:'green',  img:{ type:'emoji', val:'🟢' } },
+      { word:'purple', img:{ type:'emoji', val:'🟣' } },
+      { word:'orange', img:{ type:'emoji', val:'🟠' } },
+      { word:'blue',   img:{ type:'emoji', val:'🔵' } },
+      { word:'black',  img:{ type:'emoji', val:'⚫' } },
+    ],
+    languagePoints:[
+      {
+        id:'lp1', label:'Level 1', tag:'Statement',
+        preview:'I like (color).',
+        lines:[
+          { speaker:'Student A', text:'I like ', blank:true, suffix:'.', bg:'#FDF5D6' },
+        ]
+      },
+      {
+        id:'lp2', label:'Level 2', tag:'Q & A',
+        preview:'I like (color).\nDo you like (color)?\nYes, I do. / No, I don\'t.',
+        lines:[
+          { speaker:'Student A', text:'I like ', blank:true, suffix:'.', bg:'#FDF5D6' },
+          { speaker:'Student B', text:'Do you like ', blank:true, suffix:'?', bg:'#E3F1FC' },
+          { speaker:'Student A', text:'Yes, I do.', alt:'/ No, I don\'t.', bg:'#FDF5D6' },
+        ]
+      }
+    ]
+  },
+  {
+    id:'days', name:'Days of the Week', grade:'Grade 4', emoji:'📅',
+    vocab:[
+      { word:'Monday',    img:{ type:'emoji', val:'1️⃣' } },
+      { word:'Tuesday',   img:{ type:'emoji', val:'2️⃣' } },
+      { word:'Wednesday', img:{ type:'emoji', val:'3️⃣' } },
+      { word:'Thursday',  img:{ type:'emoji', val:'4️⃣' } },
+      { word:'Friday',    img:{ type:'emoji', val:'5️⃣' } },
+      { word:'Saturday',  img:{ type:'emoji', val:'6️⃣' } },
+      { word:'Sunday',    img:{ type:'emoji', val:'7️⃣' } },
+    ],
+    languagePoints:[
+      {
+        id:'lp1', label:'Level 1', tag:'Q & A',
+        preview:'What day is it?\nIt\'s (day).',
+        lines:[
+          { speaker:'Student A', text:'What day is it?', bg:'#E3F1FC' },
+          { speaker:'Student B', text:'It\'s ', blank:true, suffix:'.', bg:'#E3F5EC' },
+        ]
+      },
+      {
+        id:'lp2', label:'Level 2', tag:'Q & A',
+        preview:'Do you like (Mondays)?\nYes, I do. / No, I don\'t.',
+        lines:[
+          { speaker:'Student A', text:'Do you like ', blank:true, suffix:'s?', bg:'#E3F1FC' },
+          { speaker:'Student B', text:'Yes, I do.', alt:'/ No, I don\'t.', bg:'#E3F5EC' },
+        ]
+      }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────
+function imgHTML(img, size='big') {
+  if (img.type === 'img') {
+    return `<img src="${img.src}" alt="">`;
+  }
+  const fs = size === 'big' ? 'font-size:clamp(80px,18vh,140px)' : 'font-size:36px';
+  return `<span style="${fs};line-height:1">${img.val}</span>`;
+}
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let state = { deck:null, lp:null, slides:[], slideIndex:0, luckyCount:3 };
+
+// ─────────────────────────────────────────────
+//  ROUTING
+// ─────────────────────────────────────────────
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  if (id === 'home') {
+    document.getElementById('screen-home').classList.add('active');
+  } else if (id === 'lp') {
+    renderLP();
+    document.getElementById('screen-lp').classList.add('active');
+  } else if (id === 'slides') {
+    state.slideIndex = 0;
+    renderSlides();
+    document.getElementById('screen-slides').classList.add('active');
+  } else if (id === 'slides-ref') {
+    state.slideIndex = state.slides.length - 1;
+    renderSlides();
+    document.getElementById('screen-slides').classList.add('active');
+  } else if (id === 'lucky') {
+    drawLucky();
+    document.getElementById('screen-lucky').classList.add('active');
+  }
+}
+
+// ─────────────────────────────────────────────
+//  HOME
+// ─────────────────────────────────────────────
+function renderHome() {
+  document.getElementById('deck-list').innerHTML = DECKS.map(d => `
+    <div class="deck-card" onclick="selectDeck('${d.id}')">
+      <div class="deck-card-icon">${d.emoji}</div>
+      <div class="deck-card-info">
+        <div class="deck-card-name">${d.name}</div>
+        <div class="deck-card-grade">${d.grade}</div>
+        <div class="deck-card-chip">🃏 ${d.vocab.length} cards</div>
+      </div>
+      <div class="deck-card-arrow">→</div>
+    </div>
+  `).join('');
+}
+
+function selectDeck(id) {
+  state.deck = DECKS.find(d => d.id === id);
+  goTo('lp');
+}
+
+// ─────────────────────────────────────────────
+//  LANGUAGE POINT
+// ─────────────────────────────────────────────
+function renderLP() {
+  document.getElementById('lp-title').textContent = state.deck.name;
+  document.getElementById('lp-body').innerHTML = state.deck.languagePoints.map(lp => `
+    <div class="lp-card" onclick="selectLP('${lp.id}')">
+      <div class="lp-level">${lp.label}</div>
+      <div class="lp-preview">${lp.preview.replace(/\n/g, '<br>')}</div>
+      <div class="lp-tag">${lp.tag}</div>
+    </div>
+  `).join('');
+}
+
+function selectLP(id) {
+  state.lp = state.deck.languagePoints.find(l => l.id === id);
+  goTo('slides');
+}
+
+// ─────────────────────────────────────────────
+//  SLIDES
+// ─────────────────────────────────────────────
+function buildSlides() {
+  const s = [];
+  state.deck.vocab.forEach(v => s.push({ type:'vocab', vocab:v }));
+  s.push({ type:'model' });
+  s.push({ type:'ref' });
+  return s;
+}
+
+function renderSlides() {
+  state.slides = buildSlides();
+  const stage = document.getElementById('slide-stage');
+
+  // Vocab slides
+  const vocabHTML = state.deck.vocab.map((v, i) => `
+    <div class="slide" data-index="${i}">
+      <div class="vocab-card">
+        <div class="vocab-img-wrap">${imgHTML(v.img, 'big')}</div>
+        <div class="vocab-word">${v.word}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Model slide
+  const modelLinesHTML = state.lp.lines.map(line => {
+    const inner = line.blank
+      ? `${line.text}<span class="model-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>${line.suffix || ''}`
+      : `${line.text}${line.suffix || ''}`;
+    const alt = line.alt ? `<span class="model-alt">${line.alt}</span>` : '';
+    return `<div class="model-line" style="background:${line.bg}">
+      <div class="model-line-speaker">${line.speaker}</div>
+      <div class="model-line-text">${inner}${alt}</div>
+    </div>`;
+  }).join('');
+
+  // Reference slide
+  const refLinesHTML = state.lp.lines.map(line => {
+    const txt = line.blank
+      ? `${line.text}<span class="ref-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>${line.suffix || ''}`
+      : `${line.text}${line.suffix || ''}`;
+    const alt = line.alt ? ` <span class="ref-alt">${line.alt}</span>` : '';
+    return `<div class="ref-model-line">${txt}${alt}</div>`;
+  }).join('');
+
+  const minis = state.deck.vocab.map(v => `
+    <div class="vocab-mini">
+      <div class="vocab-mini-img">${imgHTML(v.img, 'mini')}</div>
+      <div class="vocab-mini-word">${v.word}</div>
+    </div>
+  `).join('');
+
+  stage.innerHTML = vocabHTML + `
+    <div class="slide" data-index="${state.deck.vocab.length}">
+      <div class="model-card">${modelLinesHTML}</div>
+    </div>
+    <div class="slide" data-index="${state.deck.vocab.length + 1}">
+      <div class="ref-card">
+        <div class="ref-model-bar">${refLinesHTML}</div>
+        <div class="vocab-grid">${minis}</div>
+        <div class="lucky-controls-row">
+          <span class="lucky-label">Lucky cards:</span>
+          <div class="toggle-group">
+            <button class="toggle-pill${state.luckyCount===2?' active':''}" onclick="setLucky(2)">2</button>
+            <button class="toggle-pill${state.luckyCount===3?' active':''}" onclick="setLucky(3)">3</button>
+            <button class="toggle-pill${state.luckyCount===4?' active':''}" onclick="setLucky(4)">4</button>
+          </div>
+          <button class="lucky-btn" onclick="goTo('lucky')">🌟 Lucky Card!</button>
+        </div>
+      </div>
+    </div>`;
+
+  updateSlideNav();
+}
+
+function setLucky(n) {
+  state.luckyCount = n;
+  document.querySelectorAll('.toggle-pill').forEach(b => {
+    b.classList.toggle('active', parseInt(b.textContent) === n);
+  });
+}
+
+function changeSlide(dir) {
+  state.slideIndex = Math.max(0, Math.min(state.slides.length - 1, state.slideIndex + dir));
+  updateSlideNav();
+}
+
+function updateSlideNav() {
+  const i = state.slideIndex;
+  const total = state.slides.length;
+  const vc = state.deck.vocab.length;
+  document.querySelectorAll('.slide').forEach((s, idx) => s.classList.toggle('active', idx === i));
+  document.getElementById('btn-prev').disabled = i === 0;
+  document.getElementById('btn-next').disabled = i === total - 1;
+  document.getElementById('slides-counter').textContent =
+    i < vc ? `Word ${i+1} of ${vc}` : i === vc ? 'Language Model' : 'Reference';
+}
+
+// ─────────────────────────────────────────────
+//  LUCKY DRAW
+// ─────────────────────────────────────────────
+function drawLucky() {
+  const picked = [...state.deck.vocab].sort(() => Math.random() - 0.5).slice(0, state.luckyCount);
+  document.getElementById('lucky-cards-row').innerHTML = picked.map(v => `
+    <div class="lucky-big-card">
+      <div class="lucky-big-img">${imgHTML(v.img, 'big')}</div>
+      <div class="lucky-big-word">${v.word}</div>
+    </div>
+  `).join('');
+  document.getElementById('screen-lucky').classList.add('active');
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+renderHome();
+</script>
+</body>
+</html>
