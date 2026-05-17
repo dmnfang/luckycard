@@ -208,8 +208,8 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 /* Lucky screen */
 #screen-lucky { padding:40px; gap:24px; align-items:center; justify-content:center; }
 .lucky-screen-title { font-family:var(--font-display); font-size:clamp(36px,6vw,56px); font-weight:600; color:var(--text-primary); flex-shrink:0; }
-.lucky-cards-row { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; align-items:stretch; flex:1; max-height:60vh; width:100%; }
-.lucky-big-card { background:var(--surface-card); border:3px solid var(--stroke-selected); border-radius:var(--r-lg); padding:24px 20px; display:flex; flex-direction:column; align-items:center; gap:12px; flex:1; max-width:220px; min-width:140px; animation:popIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both; }
+.lucky-cards-row { display:flex; gap:20px; align-items:stretch; flex:1; width:100%; }
+.lucky-big-card { background:var(--surface-card); border:3px solid var(--stroke-selected); border-radius:var(--r-lg); padding:24px 20px; display:flex; flex-direction:column; align-items:center; gap:12px; flex:1; min-width:0; animation:popIn 0.25s cubic-bezier(0.34,1.56,0.64,1) both; }
 .lucky-big-card:nth-child(2) { animation-delay:0.08s; }
 .lucky-big-card:nth-child(3) { animation-delay:0.16s; }
 .lucky-big-card:nth-child(4) { animation-delay:0.24s; }
