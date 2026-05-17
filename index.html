@@ -122,8 +122,8 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 
 .convo-body {
   flex:1; overflow-y:auto;
-  padding:28px 32px;
-  display:flex; flex-direction:column; gap:20px;
+  padding:16px 20px;
+  display:flex; flex-direction:column; gap:14px;
 }
 .convo-body::-webkit-scrollbar { width:4px; }
 .convo-body::-webkit-scrollbar-thumb { background:var(--stroke-default); border-radius:2px; }
@@ -135,16 +135,16 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 .msg-row.from-swap { justify-content:center; }
 
 .msg-avatar {
-  width:80px; height:80px; border-radius:50%;
+  width:56px; height:56px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  font-size:32px; font-weight:800; font-family:var(--font-ui);
+  font-size:22px; font-weight:800; font-family:var(--font-ui);
   flex-shrink:0;
 }
 
 .bubble {
-  padding:24px 36px;
+  padding:16px 24px;
   font-family:var(--font-display);
-  font-size:clamp(40px,6vw,72px);
+  font-size:clamp(24px,3vw,44px);
   font-weight:500;
   line-height:1.25;
 }
@@ -167,9 +167,9 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 .bubble-swap {
   background:var(--bubble-swap); color:var(--bubble-swap-text);
   border-radius:20px;
-  padding:24px 48px;
+  padding:14px 28px;
   text-align:center;
-  max-width:80%;
+  max-width:90%;
 }
 
 .bubble .blank {
@@ -179,9 +179,38 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 }
 .bubble .alt {
   display:block;
-  font-size:clamp(28px,4vw,52px);
+  font-size:clamp(16px,2vw,30px);
   opacity:0.55;
-  margin-top:6px;
+  margin-top:4px;
+}
+
+/* ══ COMBINED PANEL ══ */
+.combined-card {
+  background:var(--surface-panel);
+  border-radius:var(--r-lg);
+  border:2px solid var(--stroke-default);
+  width:100%; height:100%;
+  display:flex; gap:12px; padding:16px; overflow:hidden;
+}
+.combined-left {
+  flex:1; min-width:0;
+  background:var(--surface-card);
+  border-radius:var(--r-md);
+  border:2px solid var(--stroke-default);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+.combined-right {
+  flex:1; min-width:0;
+  display:flex; flex-direction:column;
+  gap:12px; overflow:hidden;
+}
+.combined-ref-bar {
+  background:var(--surface-card);
+  border:2px solid var(--stroke-default);
+  border-radius:var(--r-md);
+  padding:14px 20px; flex-shrink:0;
+  display:flex; flex-direction:column; gap:4px;
 }
 
 /* Reference slide */
@@ -190,8 +219,8 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 .ref-model-line { font-family:var(--font-display); font-size:clamp(18px,3vw,26px); font-weight:500; color:var(--text-primary); line-height:1.4; }
 .ref-blank { display:inline-block; min-width:56px; border-bottom:3px solid var(--stroke-medium); opacity:0.45; margin:0 4px; vertical-align:bottom; }
 .ref-alt { font-size:clamp(13px,2vw,18px); color:var(--text-muted); }
-.vocab-grid { flex:1; display:grid; grid-template-columns:repeat(4, 1fr); grid-template-rows:repeat(2, 1fr); gap:10px; overflow:hidden; }
-.vocab-grid.cols-3 { grid-template-columns:repeat(3, 1fr); }
+.vocab-grid { flex:1; display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; overflow:hidden; align-content:start; }
+.vocab-grid.cols-3 { grid-template-columns:repeat(2, 1fr); }
 .vocab-mini { background:var(--surface-card); border:2px solid var(--stroke-default); border-radius:var(--r-md); padding:8px; display:flex; flex-direction:column; align-items:center; gap:6px; min-height:0; overflow:hidden; }
 .vocab-mini.ghost { background:transparent; }
 .vocab-mini-img { flex:4; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; font-size:clamp(32px,6vh,64px); line-height:1; }
@@ -421,8 +450,7 @@ function buildConvoHTML() {
 function buildSlides() {
   const s = [];
   state.deck.vocab.forEach(v => s.push({ type:'vocab', vocab:v }));
-  s.push({ type:'model' });
-  s.push({ type:'ref' });
+  s.push({ type:'combined' });
   return s;
 }
 
@@ -438,57 +466,50 @@ function renderSlides() {
       </div>
     </div>`).join('');
 
-  const exchangeMessages = state.lp.messages.filter(m => m.side !== 'swap');
-  const refLinesHTML = exchangeMessages.map(m => {
-    const label = m.side === 'a' ? 'A: ' : 'B: ';
-    let txt = label + m.text;
-    if (m.blank) txt += `<span class="ref-blank">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>${m.suffix || ''}`;
-    else txt += m.suffix || '';
-    const alt = m.alt ? ` <span class="ref-alt">${m.alt}</span>` : '';
-    return `<div class="ref-model-line">${txt}${alt}</div>`;
-  }).join('');
-
   const count = state.deck.vocab.length;
-  const cols = count <= 6 ? 3 : 4;
-  const total = cols * 2;
   const vocabCards = state.deck.vocab.map(v => `
     <div class="vocab-mini">
       <div class="vocab-mini-img">${imgHTML(v.img, 'mini')}</div>
       <div class="vocab-mini-word">${v.word}</div>
     </div>`).join('');
+  const rows = Math.ceil(count / 2);
+  const total = rows * 2;
   const ghosts = Array(Math.max(0, total - count)).fill('<div class="vocab-mini ghost"></div>').join('');
   const minis = vocabCards + ghosts;
-  const gridClass = cols === 3 ? 'vocab-grid cols-3' : 'vocab-grid';
 
   stage.innerHTML = vocabHTML + `
     <div class="slide" data-index="${state.deck.vocab.length}">
-      <div class="convo-card">
-        <div class="convo-header">
-          <div class="convo-header-side side-a">
-            <div class="convo-avatar avatar-a">A</div>
-            <div class="convo-header-name">Student A</div>
+      <div class="combined-card">
+
+        <!-- LEFT: conversation -->
+        <div class="combined-left">
+          <div class="convo-header">
+            <div class="convo-header-side side-a">
+              <div class="convo-avatar avatar-a">A</div>
+              <div class="convo-header-name">Student A</div>
+            </div>
+            <div class="convo-header-side side-b">
+              <div class="convo-header-name">Student B</div>
+              <div class="convo-avatar avatar-b">B</div>
+            </div>
           </div>
-          <div class="convo-header-side side-b">
-            <div class="convo-header-name">Student B</div>
-            <div class="convo-avatar avatar-b">B</div>
+          <div class="convo-body">${buildConvoHTML()}</div>
+        </div>
+
+        <!-- RIGHT: vocab grid + lucky controls -->
+        <div class="combined-right">
+          <div class="vocab-grid">${minis}</div>
+          <div class="lucky-controls-row">
+            <span class="lucky-label">Lucky cards:</span>
+            <div class="toggle-group">
+              <button class="toggle-pill${state.luckyCount===2?' active':''}" onclick="setLucky(2)">2</button>
+              <button class="toggle-pill${state.luckyCount===3?' active':''}" onclick="setLucky(3)">3</button>
+              <button class="toggle-pill${state.luckyCount===4?' active':''}" onclick="setLucky(4)">4</button>
+            </div>
+            <button class="lucky-btn" onclick="goTo('lucky')">🌟 Lucky Card!</button>
           </div>
         </div>
-        <div class="convo-body">${buildConvoHTML()}</div>
-      </div>
-    </div>
-    <div class="slide" data-index="${state.deck.vocab.length + 1}">
-      <div class="ref-card">
-        <div class="ref-model-bar">${refLinesHTML}</div>
-        <div class="${gridClass}">${minis}</div>
-        <div class="lucky-controls-row">
-          <span class="lucky-label">Lucky cards:</span>
-          <div class="toggle-group">
-            <button class="toggle-pill${state.luckyCount===2?' active':''}" onclick="setLucky(2)">2</button>
-            <button class="toggle-pill${state.luckyCount===3?' active':''}" onclick="setLucky(3)">3</button>
-            <button class="toggle-pill${state.luckyCount===4?' active':''}" onclick="setLucky(4)">4</button>
-          </div>
-          <button class="lucky-btn" onclick="goTo('lucky')">🌟 Lucky Card!</button>
-        </div>
+
       </div>
     </div>`;
 
@@ -511,7 +532,7 @@ function updateSlideNav() {
   document.getElementById('btn-prev').disabled = i === 0;
   document.getElementById('btn-next').disabled = i === total - 1;
   document.getElementById('slides-counter').textContent =
-    i < vc ? `Word ${i+1} of ${vc}` : i === vc ? 'Language Model' : 'Reference';
+    i < vc ? `Word ${i+1} of ${vc}` : 'Conversation & Cards';
 }
 
 function drawLucky() {
