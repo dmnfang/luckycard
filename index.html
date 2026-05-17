@@ -221,7 +221,7 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 .lucky-controls-row { display:flex; align-items:center; gap:12px; flex-shrink:0; background:var(--surface-card); border:2px solid var(--stroke-default); border-radius:var(--r-md); padding:12px 16px; }
 .lucky-label { font-size:14px; font-weight:700; color:var(--text-muted); flex-shrink:0; }
 .toggle-group { display:flex; gap:6px; }
-.toggle-pill { height:40px; padding:0 18px; border-radius:var(--r-pill); border:none; background:var(--surface-inset); color:var(--text-muted); font-family:var(--font-ui); font-size:16px; font-weight:800; cursor:pointer; transition:background 0.15s, color 0.15s; }
+.toggle-pill { width:40px; height:40px; padding:0; border-radius:50%; border:none; background:var(--surface-inset); color:var(--text-muted); font-family:var(--font-ui); font-size:16px; font-weight:800; cursor:pointer; transition:background 0.15s, color 0.15s; display:flex; align-items:center; justify-content:center; }
 .toggle-pill.active { background:var(--green); color:#fff; }
 .lucky-btn { height:40px; padding:0 24px; border-radius:var(--r-lg); background:var(--green); color:var(--text-inverse); font-family:var(--font-ui); font-size:15px; font-weight:800; border:none; cursor:pointer; margin-left:auto; }
 .lucky-btn:active { transform:scale(0.97); opacity:0.85; }
@@ -263,7 +263,7 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 
 <div class="screen" id="screen-lp">
   <div class="topbar">
-    <button class="nav-btn" onclick="goTo('home')">←</button>
+    <button class="slide-nav-btn" onclick="goTo('home')">Decks</button>
     <div>
       <div class="topbar-title" id="lp-title"></div>
       <div class="topbar-sub">Choose a language point</div>
@@ -274,10 +274,10 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 
 <div class="screen" id="screen-slides">
   <div class="slides-topbar">
-    <button class="nav-btn" onclick="goTo('lp')">←</button>
-    <button class="slide-nav-btn" id="btn-prev" onclick="changeSlide(-1)">← Back</button>
+    <button class="slide-nav-btn" onclick="goTo('lp')">Language</button>
+    <button class="slide-nav-btn" id="btn-prev" onclick="changeSlide(-1)">Back</button>
     <div class="slides-counter" id="slides-counter"></div>
-    <button class="slide-nav-btn" id="btn-next" onclick="changeSlide(1)">Next →</button>
+    <button class="slide-nav-btn" id="btn-next" onclick="changeSlide(1)">Next</button>
   </div>
   <div class="slide-stage" id="slide-stage"></div>
 </div>
@@ -286,7 +286,7 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
   <div class="lucky-screen-title">🌟 Lucky Cards!</div>
   <div class="lucky-cards-row" id="lucky-cards-row"></div>
   <div class="lucky-actions">
-    <button class="lucky-back-btn" onclick="goTo('slides-ref')">← Back</button>
+    <button class="lucky-back-btn" onclick="goTo('slides-ref')">Back</button>
     <button class="lucky-redraw-btn" onclick="drawLucky()">Draw Again 🎲</button>
   </div>
 </div>
