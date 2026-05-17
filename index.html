@@ -190,13 +190,13 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 .ref-model-line { font-family:var(--font-display); font-size:clamp(18px,3vw,26px); font-weight:500; color:var(--text-primary); line-height:1.4; }
 .ref-blank { display:inline-block; min-width:56px; border-bottom:3px solid var(--stroke-medium); opacity:0.45; margin:0 4px; vertical-align:bottom; }
 .ref-alt { font-size:clamp(13px,2vw,18px); color:var(--text-muted); }
-.vocab-grid { flex:1; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:10px; align-content:start; }
-.vocab-grid::-webkit-scrollbar { width:4px; }
-.vocab-grid::-webkit-scrollbar-thumb { background:var(--stroke-default); border-radius:2px; }
-.vocab-mini { background:var(--surface-inset); border-radius:var(--r-md); padding:10px 8px; display:flex; flex-direction:column; align-items:center; gap:6px; }
-.vocab-mini-img { font-size:36px; line-height:1; }
-.vocab-mini-img img { width:56px; height:56px; object-fit:contain; }
-.vocab-mini-word { font-family:var(--font-display); font-size:16px; font-weight:500; text-align:center; color:var(--text-primary); }
+.vocab-grid { flex:1; display:grid; grid-template-columns:repeat(4, 1fr); grid-template-rows:repeat(2, 1fr); gap:10px; overflow:hidden; }
+.vocab-grid.cols-3 { grid-template-columns:repeat(3, 1fr); }
+.vocab-mini { background:var(--surface-inset); border-radius:var(--r-md); padding:10px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; min-height:0; overflow:hidden; }
+.vocab-mini.ghost { background:transparent; }
+.vocab-mini-img { font-size:clamp(28px,5vh,52px); line-height:1; }
+.vocab-mini-img img { width:clamp(40px,7vh,72px); height:clamp(40px,7vh,72px); object-fit:contain; }
+.vocab-mini-word { font-family:var(--font-display); font-size:clamp(14px,2.2vh,22px); font-weight:500; text-align:center; color:var(--text-primary); }
 .lucky-controls-row { display:flex; align-items:center; gap:12px; flex-shrink:0; padding-top:4px; }
 .lucky-label { font-size:14px; font-weight:700; color:var(--text-muted); flex-shrink:0; }
 .toggle-group { display:flex; gap:6px; }
@@ -448,11 +448,17 @@ function renderSlides() {
     return `<div class="ref-model-line">${txt}${alt}</div>`;
   }).join('');
 
-  const minis = state.deck.vocab.map(v => `
+  const count = state.deck.vocab.length;
+  const cols = count <= 6 ? 3 : 4;
+  const total = cols * 2;
+  const vocabCards = state.deck.vocab.map(v => `
     <div class="vocab-mini">
       <div class="vocab-mini-img">${imgHTML(v.img, 'mini')}</div>
       <div class="vocab-mini-word">${v.word}</div>
     </div>`).join('');
+  const ghosts = Array(Math.max(0, total - count)).fill('<div class="vocab-mini ghost"></div>').join('');
+  const minis = vocabCards + ghosts;
+  const gridClass = cols === 3 ? 'vocab-grid cols-3' : 'vocab-grid';
 
   stage.innerHTML = vocabHTML + `
     <div class="slide" data-index="${state.deck.vocab.length}">
@@ -473,7 +479,7 @@ function renderSlides() {
     <div class="slide" data-index="${state.deck.vocab.length + 1}">
       <div class="ref-card">
         <div class="ref-model-bar">${refLinesHTML}</div>
-        <div class="vocab-grid">${minis}</div>
+        <div class="${gridClass}">${minis}</div>
         <div class="lucky-controls-row">
           <span class="lucky-label">Lucky cards:</span>
           <div class="toggle-group">
