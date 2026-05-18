@@ -488,7 +488,7 @@ function renderHome() {
       <div class="deck-card-info">
         <div class="deck-card-name">${d.name}</div>
         <div class="deck-card-grade">${d.grade}</div>
-        <div class="deck-card-chip">🃏 ${d.vocab.length} cards</div>
+        <div class="deck-card-chip">🃏 ${d.activities ? d.activities.length : d.vocab.length} cards</div>
       </div>
       <div class="deck-card-arrow">→</div>
     </div>`).join('');
