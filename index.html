@@ -512,14 +512,16 @@ function renderSlides() {
   state.slides = buildSlides();
   const stage = document.getElementById('slide-stage');
 
-  const vocabHTML = state.deck.vocab.map((v, i) => `
-    <div class="slide" data-index="${i}">
+  const vocabHTML = state.deck.vocab.map((v, i) => {
+    const badge = v.weatherImg ? '<div class="vocab-weather-badge"><img src="' + v.weatherImg.src + '" alt="' + v.weather + '"></div>' : '';
+    return `<div class="slide" data-index="${i}">
       <div class="vocab-card">
-        ${v.weatherImg ? `<div class="vocab-weather-badge"><img src="${v.weatherImg.src}" alt="${v.weather}"></div>` : ''}
+        ${badge}
         <div class="vocab-img-wrap">${imgHTML(v.img, 'big')}</div>
         <div class="vocab-word">${v.word}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   const count = state.deck.vocab.length;
   const vocabCards = state.deck.vocab.map(v => `
