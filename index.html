@@ -228,7 +228,17 @@ img { display:block; max-width:100%; max-height:100%; object-fit:contain; }
 .vocab-grid { flex:1; display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; overflow:hidden; align-content:start; }
 .vocab-grid.cols-3 { grid-template-columns:repeat(2, 1fr); }
 .vocab-mini { background:var(--surface-card); border:2px solid var(--stroke-default); border-radius:var(--r-md); padding:8px; display:flex; flex-direction:column; align-items:center; gap:6px; min-height:0; overflow:hidden; }
-.vocab-mini.ghost { background:transparent; }
+.vocab-mini.ghost { background:transparent; border:none; }
+.vocab-mini-pip {
+  position:absolute; bottom:6px; right:6px;
+  width:28px; height:28px;
+  border-radius:var(--r-sm);
+  overflow:hidden;
+  border:2px solid var(--stroke-default);
+  background:var(--surface-card);
+}
+.vocab-mini-pip img { width:100%; height:100%; object-fit:contain; }
+.vocab-mini { position:relative; }
 .vocab-mini-img { flex:4; display:flex; align-items:center; justify-content:center; width:100%; min-height:0; font-size:clamp(32px,6vh,64px); line-height:1; }
 .vocab-mini-img img { max-width:100%; max-height:100%; object-fit:contain; }
 .vocab-mini-word { flex:1; display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:clamp(16px,2.8vh,26px); font-weight:600; text-align:center; color:var(--text-primary); }
@@ -392,8 +402,16 @@ const DECKS = [
     ]
   },
   {
-    id:'weather', name:'Weather & Activities', grade:'Grade 3', emoji:'⛅',
-    vocab:[
+    id:'weather', name:'Weather & Activities', grade:'Grade 4', emoji:'⛅',
+    // weatherTypes used for Level 1 slides and lucky draw for both levels
+    weatherTypes:[
+      { word:'sunny',  img:{ type:'img', src:'images/weather/sunny.png' } },
+      { word:'cloudy', img:{ type:'img', src:'images/weather/cloudy.png' } },
+      { word:'rainy',  img:{ type:'img', src:'images/weather/rainy.png' } },
+      { word:'snowy',  img:{ type:'img', src:'images/weather/snowy.png' } },
+    ],
+    // activities used for Level 2 slides, mini grid, and lucky draw
+    activities:[
       { word:'play dodgeball', weather:'sunny',  img:{ type:'img', src:'images/weather/play-dodgeball.png' }, weatherImg:{ type:'img', src:'images/weather/sunny.png' } },
       { word:'play soccer',    weather:'sunny',  img:{ type:'img', src:'images/weather/play-soccer.png' },    weatherImg:{ type:'img', src:'images/weather/sunny.png' } },
       { word:'play tag',       weather:'cloudy', img:{ type:'img', src:'images/weather/play-tag.png' },       weatherImg:{ type:'img', src:'images/weather/cloudy.png' } },
@@ -403,13 +421,17 @@ const DECKS = [
       { word:'make a snowman', weather:'snowy',  img:{ type:'img', src:'images/weather/make-a-snowman.png' }, weatherImg:{ type:'img', src:'images/weather/snowy.png' } },
       { word:'go sledding',    weather:'snowy',  img:{ type:'img', src:'images/weather/go-sledding.png' },    weatherImg:{ type:'img', src:'images/weather/snowy.png' } },
     ],
+    // vocab is set dynamically by renderSlides based on LP
+    vocab:[],
     languagePoints:[
       {
         id:'lp1', label:'Level 1', tag:'Q & A',
+        vocabSource:'weatherTypes',
+        luckySource:'weatherTypes',
         preview:"How's the weather?\nIt's (sunny).",
         messages:[
-          { side:'a', text:"Hello!" },
-          { side:'b', text:"Hello!" },
+          { side:'a', text:'Hello!' },
+          { side:'b', text:'Hello!' },
           { side:'a', text:"How's the weather?" },
           { side:'b', text:"It's ", blank:true, suffix:'.' },
           { side:'swap', text:'🔄 Swap cards!' },
@@ -419,12 +441,14 @@ const DECKS = [
       },
       {
         id:'lp2', label:'Level 2', tag:'Q & A',
+        vocabSource:'both',
+        luckySource:'activities',
         preview:"How's the weather?\nIt's (snowy). Let's (go sledding)!\nYes, let's! / No, thank you.",
         messages:[
-          { side:'a', text:"Hello!" },
-          { side:'b', text:"Hello!" },
+          { side:'a', text:'Hello!' },
+          { side:'b', text:'Hello!' },
           { side:'a', text:"How's the weather?" },
-          { side:'b', text:"It's ", blank:true, suffix:"." },
+          { side:'b', text:"It's ", blank:true, suffix:'.' },
           { side:'b', text:"Let's ", blank:true, suffix:'!' },
           { side:'a', text:"Yes, let's!", alt:'/ No, thank you.' },
           { side:'swap', text:'🔄 Swap cards!' },
@@ -478,7 +502,15 @@ function renderLP() {
     </div>`).join('');
 }
 
-function selectLP(id) { state.lp = state.deck.languagePoints.find(l => l.id === id); goTo('slides'); }
+function selectLP(id) {
+  state.lp = state.deck.languagePoints.find(l => l.id === id);
+  if (state.deck.weatherTypes) {
+    if (state.lp.vocabSource === 'weatherTypes') state.deck.vocab = state.deck.weatherTypes;
+    else if (state.lp.vocabSource === 'both') state.deck.vocab = [...state.deck.weatherTypes, ...state.deck.activities];
+    else state.deck.vocab = state.deck.activities;
+  }
+  goTo('slides');
+}
 
 function buildConvoHTML() {
   return state.lp.messages.map(msg => {
@@ -520,12 +552,17 @@ function renderSlides() {
     </div>`;
   }).join('');
 
-  const count = state.deck.vocab.length;
-  const vocabCards = state.deck.vocab.map(v => `
-    <div class="vocab-mini">
-      <div class="vocab-mini-img">${imgHTML(v.img, 'mini')}</div>
-      <div class="vocab-mini-word">${v.word}</div>
-    </div>`).join('');
+  // Mini grid always shows the lucky pool cards
+  const miniSource = (state.deck.weatherTypes && state.lp.luckySource === 'activities')
+    ? state.deck.activities
+    : (state.deck.weatherTypes && state.lp.luckySource === 'weatherTypes')
+      ? state.deck.weatherTypes
+      : state.deck.vocab;
+  const count = miniSource.length;
+  const vocabCards = miniSource.map(v => {
+    const pip = v.weatherImg ? '<div class="vocab-mini-pip"><img src="' + v.weatherImg.src + '" alt=""></div>' : '';
+    return '<div class="vocab-mini">' + pip + '<div class="vocab-mini-img">' + imgHTML(v.img, 'mini') + '</div><div class="vocab-mini-word">' + v.word + '</div></div>';
+  }).join('');
   const rows = Math.ceil(count / 2);
   const total = rows * 2;
   const ghosts = Array(Math.max(0, total - count)).fill('<div class="vocab-mini ghost"></div>').join('');
@@ -580,7 +617,10 @@ function updateSlideNav() {
 }
 
 function drawLucky() {
-  const picked = [...state.deck.vocab].sort(() => Math.random() - 0.5).slice(0, state.luckyCount);
+  let pool = state.deck.vocab;
+  if (state.deck.weatherTypes && state.lp.luckySource === 'weatherTypes') pool = state.deck.weatherTypes;
+  else if (state.deck.weatherTypes && state.lp.luckySource === 'activities') pool = state.deck.activities;
+  const picked = [...pool].sort(() => Math.random() - 0.5).slice(0, state.luckyCount);
   document.getElementById('lucky-cards-row').innerHTML = picked.map(v => `
     <div class="lucky-big-card">
       <div class="lucky-big-img">${imgHTML(v.img, 'big')}</div>
