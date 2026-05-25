@@ -1,0 +1,117 @@
+.home-screen {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  padding: 24px; gap: 24px;
+  background: var(--surface-base);
+}
+
+.home-topbar {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  height: 40px; flex-shrink: 0;
+}
+
+.home-title {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 600;
+  color: var(--text-primary); line-height: 1;
+}
+
+.grade-toggle {
+  display: flex; gap: 8px;
+}
+
+.grade-btn {
+  height: 40px; padding: 0 20px;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--stroke-default);
+  background: var(--surface-card);
+  font-family: var(--font-ui);
+  font-size: 15px; font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.grade-btn.active {
+  background: var(--text-primary);
+  color: var(--text-inverse);
+  border-color: var(--text-primary);
+}
+
+.home-body {
+  flex: 1; min-height: 0;
+}
+
+.deck-panel {
+  height: 100%;
+  background: var(--surface-panel);
+  border-radius: var(--r-lg);
+  border: 2px solid var(--stroke-default);
+  padding: 24px;
+  display: flex; flex-direction: column;
+  gap: 16px;
+}
+
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 500;
+  color: var(--text-primary); flex-shrink: 0;
+}
+
+.deck-list {
+  display: flex; flex-direction: column;
+  gap: 12px; flex: 1;
+  overflow: visible;
+}
+
+.deck-loading {
+  font-size: 15px; color: var(--text-muted);
+  padding: 16px 0;
+}
+
+.deck-card {
+  background: var(--surface-card);
+  border-radius: var(--r-lg);
+  border: 2px solid var(--stroke-default);
+  padding: 16px 16px;
+  cursor: pointer;
+  display: flex; align-items: center;
+  gap: 16px;
+  transition: border-color 0.15s;
+}
+
+.deck-card:hover { border-color: var(--stroke-medium); }
+
+.deck-card:hover { border-color: var(--stroke-medium); }
+.deck-card:active { opacity: 0.85; }
+
+.deck-card-icon {
+  width: 52px; height: 52px;
+  border-radius: var(--r-md);
+  background: var(--surface-inset);
+  display: flex; align-items: center;
+  justify-content: center;
+  font-size: 28px; flex-shrink: 0;
+}
+
+.deck-card-info { flex: 1; }
+
+.deck-card-name {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 500;
+  color: var(--text-primary); line-height: 1.2;
+}
+
+.deck-card-chip {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-inset);
+  border-radius: var(--r-pill);
+  padding: 0 12px;
+  height: 26px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-top: 6px;
+}

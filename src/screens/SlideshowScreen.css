@@ -1,0 +1,61 @@
+.slideshow-screen {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  padding: 24px; gap: 16px;
+  background: var(--surface-base);
+}
+
+.slideshow-topbar {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  height: 40px; flex-shrink: 0;
+}
+
+.slideshow-counter {
+  font-size: 14px; font-weight: 700;
+  color: var(--text-muted);
+}
+
+.slideshow-nav-group {
+  display: flex; gap: 12px;
+}
+
+.slideshow-stage {
+  flex: 1; min-height: 0;
+}
+
+.vocab-card {
+  width: 100%; height: 100%;
+  background: var(--surface-card);
+  border-radius: var(--r-lg);
+  border: 2px solid var(--stroke-default);
+  display: flex; flex-direction: column;
+  align-items: center; padding: 24px; gap: 16px;
+  overflow: hidden;
+}
+
+.vocab-img-wrap {
+  flex: 4; display: flex;
+  align-items: center; justify-content: center;
+  width: 100%; min-height: 0; overflow: hidden;
+}
+
+.vocab-img-wrap img {
+  max-width: 100%; max-height: 100%;
+  object-fit: contain;
+}
+
+.vocab-placeholder {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 600; color: var(--text-muted);
+}
+
+.vocab-word {
+  flex: 1; display: flex;
+  align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: clamp(52px, 10vw, 88px);
+  font-weight: 600; color: var(--text-primary);
+  text-align: center; line-height: 1.1;
+}
