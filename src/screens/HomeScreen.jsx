@@ -5,6 +5,8 @@ import './HomeScreen.css'
 const GRADES = [
   { id: 'grade3', name: 'Grade 3' },
   { id: 'grade4', name: 'Grade 4' },
+  { id: 'grade5', name: 'Grade 5' },
+  { id: 'grade6', name: 'Grade 6' },
 ]
 
 function getDeckEmoji(name) {
@@ -27,6 +29,8 @@ function HomeScreen({ onSelectDeck }) {
       setLoading(false)
     })
   }, [activeGrade])
+
+  const activeGradeName = GRADES.find(g => g.id === activeGrade)?.name ?? ''
 
   return (
     <div className="home-screen">
@@ -63,9 +67,7 @@ function HomeScreen({ onSelectDeck }) {
                   <div className="deck-card-icon">{getDeckEmoji(deck.name)}</div>
                   <div className="deck-card-info">
                     <div className="deck-card-name">{deck.name}</div>
-                    <div className="deck-card-chip">
-                      {activeGrade === 'grade3' ? 'Grade 3' : 'Grade 4'}
-                    </div>
+                    <div className="deck-card-chip">{activeGradeName}</div>
                   </div>
                 </div>
               ))
